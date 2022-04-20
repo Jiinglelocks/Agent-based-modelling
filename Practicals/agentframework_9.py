@@ -11,27 +11,6 @@ import csv
 random.seed = 5
 
 """
-# to get the below create_env function working, I first tested it in this format outside of agentframework:
-def csv_func_test(input_file):
-    file1 = input_file
-    dataset = file1 
-    list1 = []
-    for row in dataset:
-        rowlist=[]
-        #print("new row")
-        #print(row)
-        for values in row:
-            rowlist.append(values)
-            #print(values) # test how values are read in
-        #print(rowlist) # test how the row list looks
-        list1.append(rowlist)
-    return list1
-
-input_file = ["10", "20", "30", "40", "50", "60", "70", "80", "90", "100"]
-environment = csv_func_test(input_file)
-print(environment)
-"""
-
 def create_env(environment_file):
     #pass
     file1 = open(environment_file, newline="")
@@ -49,7 +28,7 @@ def create_env(environment_file):
         environment.append(rowlist)
     file1.close()
     #print(environment[0:2]) # print a small slice of the environment list
-    return environment
+"""
 
 class Agent():
 # Special methods like the __init__ constructor and other class properties go here
@@ -180,14 +159,9 @@ class Agent():
     #def hi(self):
         #print("hello world")
 
-class Predator(Agent): # creating a subclass of Agent to transfer
+class Predator():
     def __init__ (self, environment, name, agents, predators): # self is a variable representing the object is injected into the call, traditionally called self (not a keyword)
         #pass
-        self.predators = predators
-        super().__init__(environment, name, agents)
-        
-        """
-        # no need for these, since they have been inherited from the Agent class
         self._y = random.randint(0,299) #None
         self._x = random.randint(0,299) #None
         self.environment = environment
@@ -195,8 +169,57 @@ class Predator(Agent): # creating a subclass of Agent to transfer
         self.name = name
         self.agents = agents
         self.predators = predators
+        
+# protecting the y and x variables behind get/set methods
+    def get_y(self):
         """
+        user-defined methods such as the agent's actions etc follow.
+        the below function moves the agent randomly when called
+        could use .y here also to call get/set methods defined above
+        but since this is inside the agentframework module it's clearer
+        to use the private variable _y     
 
+        Returns
+        -------
+        TYPE
+            DESCRIPTION.
+
+        """
+        return self._y
+        
+    def set_y(self, value):
+        self._y = value
+        
+    def del_y(self):
+        del self._y
+# any code that retrieves the value of y will call get_y()
+# any that assigns a value to y will call set_y()
+    y = property(get_y, set_y, del_y, "y property")
+        
+    def get_x(self):
+        return self._x
+        
+    def set_x(self, value):
+        self._x = value
+        
+    def del_x(self):
+        del self._x
+    
+    x = property(get_x, set_x, del_x, "x property")
+
+    def move(self):
+        if random.random() < 0.5:
+            self._y = (self._y + 5) % 300
+        else:
+            self._y = (self._y - 5) % 300
+        if random.random() < 0.5:
+            self._x = (self._x + 5) % 300        
+        else:
+            self._x = (self._x - 5) % 300 
+
+    def distance_between(self, agent):
+        return (((self._y - agent.y)**2) + ((self._x - agent.x)**2))**0.5
+        
     def hunt_agent(self, neighbourhood):
         for agent in self.agents[:]:
             distance = self.distance_between(agent)
