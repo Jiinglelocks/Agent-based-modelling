@@ -7,8 +7,10 @@ Created on Sat Apr 16 15:45:52 2022
 
 import random
 import csv
+import requests
+import bs4
 
-random.seed = 5
+#random.seed = 5
 
 """
 # to get the below create_env function working, I first tested it in this format outside of agentframework:
@@ -53,10 +55,16 @@ def create_env(environment_file):
 
 class Agent():
 # Special methods like the __init__ constructor and other class properties go here
-    def __init__ (self, environment, name, agents): # self is a variable representing the object is injected into the call, traditionally called self (not a keyword)
+    def __init__ (self, environment, name, agents, y=None, x=None): # self is a variable representing the object is injected into the call, traditionally called self (not a keyword)
         #pass
-        self._y = random.randint(0,299) #None
-        self._x = random.randint(0,299) #None
+        if (y == None):
+            self._y = random.randint(0,299)
+        else:
+            self._y = y #random.randint(0,299)
+        if (x == None):
+            self._y = random.randint(0,299)
+        else:
+            self._x = x #random.randint(0,299)
         self.environment = environment
         self.store = 0
         self.name = name
@@ -163,7 +171,7 @@ class Agent():
         elif self.environment[self._y][self._x] > 0 < 10: # if the value is greater than 0 but less than 10
             self.store += self.environment[self._y][self._x] # store that value first, before it is changed by the next line (agent eats the value)
             self.environment[self._y][self._x] -= self.environment[self._y][self._x] # reducing the value to 0 by subtracting it from itself (agent has eaten the remainder)
-        if self.store > 100: # if agent's store exceeds 100
+        if self.store > 200: # if agent's store exceeds 200
             self.environment[self._y][self._x] += self.store # the environment receives the store value at current location
             self.store -= self.store # the agent's store loses the value (Agent was sick!)
     
@@ -183,10 +191,10 @@ class Agent():
                     agent.store = resource_share
 
 class Predator(Agent): # creating a subclass of Agent to transfer
-    def __init__ (self, environment, name, agents, predators): # self is a variable representing the object is injected into the call, traditionally called self (not a keyword)
+    def __init__ (self, environment, name, agents, y, x, predators): # self is a variable representing the object is injected into the call, traditionally called self (not a keyword)
         #pass
         self.predators = predators
-        super().__init__(environment, name, agents)
+        super().__init__(environment, name, agents, y, x)
         
         """
         # no need for these, since they have been inherited from the Agent class

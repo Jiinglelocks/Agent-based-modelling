@@ -21,27 +21,51 @@ import matplotlib.pyplot
 import matplotlib.animation
 import agentframework
 import csv
+import requests
+import bs4
 
 # set random seed for reproducible results
-random.seed = 5
+#random.seed = 5
 
 # define model parameters
 num_of_agents = 10
 num_of_iterations = 10 #100
 neighbourhood = 20
-num_of_predators = 2
+num_of_predators = 4
 
 # first part of code for animation
 # setting the figure
 fig = matplotlib.pyplot.figure(figsize=(7, 7))
 ax = fig.add_axes([0, 0, 1, 1])
-ax.set_autoscale_on(False)
-
+#ax.set_autoscale_on(False)
 
 # code for calling csv read function from agentframework
 environment_file = 'in.txt' #'test.txt'
 environment = agentframework.create_env(environment_file)
 #print(environment[2]) # testing that the create_env function read the text file correctly
+
+# make a http request inside a response variable 'r'
+r = requests.get('http://www.geog.leeds.ac.uk/courses/computing/practicals/python/agent-framework/part9/data.html')
+content = r.text
+# make the soup! passing the text from the http request into a BeautifulSoup object
+# which represents it as a nested data structure
+soup = bs4.BeautifulSoup(content, 'html.parser')
+#print(soup.prettify()) # checking out the html in an indented format
+td_ys = soup.find_all(attrs={"class" : "y"}) # finds all rows with specified class, stores in a list including tags
+td_xs = soup.find_all(attrs={"class" : "x"})
+#print(int(td_ys[0].text)) # printing out a value at position [0] to see how it looks
+
+# stripping out the integer values from the td_ys and td_xs lists and appending
+# to a blank list, for example, now instead of <td class="y">93</td> the value will be 93
+y_values = []
+for row in td_ys:
+    #print(int(row.text))
+    y_values.append(int(row.text))
+x_values = []
+for row in td_xs:
+    x_values.append(int(row.text))
+#print(y_values) # checking how it looks
+#print(x_values)
 
 """
 ---- SECTION B ----
@@ -52,28 +76,40 @@ agents = []
 predators = []
 
 for i in range(num_of_agents):
+    y = y_values[i]
+    x = x_values[i]
     name = ("Agent " + str(i)) # creating iterating agent name within name variable
-    agents.append(agentframework.Agent(environment, name, agents)) # passing environment and name variables back into Agent class (making available to inner class functions)
+    agents.append(agentframework.Agent(environment, name, agents, y, x)) # passing environment and name variables back into Agent class (making available to inner class functions)
 
 # creating predators
 for i in range(num_of_predators):
+    #y = y_values[i]
+    #x = x_values[i]
     name = ("Predator" + str(i))
-    predators.append(agentframework.Predator(environment, name, agents, predators))
+    predators.append(agentframework.Predator(environment, name, agents, y, x, predators))
 
-if num_of_predators > 0:
+if num_of_predators < 0:
+    ("Error: cannot have negative predators")
+elif num_of_predators == 1:
+    ("There is a predator about, Agents be careful!")
+elif num_of_predators > 1:
     print("There are",num_of_predators, "Predators about, Agents be careful!")
+else:
+    print("No predators, Agents relax...")
 
+"""
 # printing out agent names to test __str__ override, see how name looks
 # prints initial location and store info for each agent  
 print("Initial agent info:")
 for agent in agents:
     print(agent.agent_status())
+"""
 
 # another part of animation code
 def update(frame_number):
     fig.clear()
 
-# move each agent randomly
+# agent activity
     for j in range(num_of_iterations):
         for i in range(num_of_agents):
             agents[i].move()
@@ -81,7 +117,7 @@ def update(frame_number):
             agents[i].share_with_neighbours(neighbourhood)
             random.shuffle(agents) # shuffle the list of agents to prevent artifacts
 
-    
+# predator activity   
     for j in range(num_of_iterations):
         for i in range(num_of_predators):
             predators[i].move()
@@ -103,14 +139,17 @@ def update(frame_number):
     for i in range(num_of_predators):
         matplotlib.pyplot.scatter(predators[i]._x, predators[i]._y, color='red', marker='x')
 
+
 def run():
-    animation = matplotlib.animation.FuncAnimation(fig, update, interval=1)
+    #animation = matplotlib.animation.FuncAnimation(fig, update, interval=1)
+    animation = matplotlib.animation.FuncAnimation(fig, update, frames=num_of_iterations, repeat=False)
+    #animation = matplotlib.animation.FuncAnimation(fig, update, frames=gen_function, repeat=False)
     canvas.draw()
 #matplotlib.pyplot.show()
 
 def quit_model():
-    root.quit()
-    root.destroy()
+    root.quit() # exit mainloop but preserve interpreter and widgets, can execute code to further interact with widgets
+    root.destroy() # destroy all widgets and exit mainloop
 
 root = tkinter.Tk()
 root.wm_title("Model")
@@ -127,10 +166,11 @@ model_menu.add_command(label="Quit", command=quit_model)
 
 
 
+"""
 print("Agent updates:")
 for agent in agents:
     print(agent.agent_status())
- 
+"""
 # testing the check_other_agent function to confirm the agents list is passing into the agent class correctly
 #agents[0].check_other_agent()
 
@@ -138,10 +178,11 @@ for agent in agents:
 ---- SECTION D ----
 ---- Agent Feedback and Metrics ----
 """
-
+"""
 # legacy distance_between function that works with the distance list populating code below
 def distance_between(agents_row_a, agents_row_b):
     return (((agents_row_a.y - agents_row_b.y)**2) + ((agents_row_a.x - agents_row_b.x)**2))**0.5
+"""
 """
 # testing a way to slice lists to prevent repeating pairs
 list = [1,5,4,7]
@@ -149,6 +190,7 @@ for i in range(len(list)):
   list2 = list[i+1:]
   for j in range(len(list2)):
       print(list[i],"-",list2[j])
+"""
 """
 # another solution with the addition of preventing repeated testing of pairs of agents
 # makes use of list slicing to only calculate distances between agents_row_a and everything 
@@ -172,7 +214,7 @@ print("max distance was:", max_dist)
 print("min distance was:", min_dist)
 
 #print(agents[0].environment[agents[0].y][agents[0].x])
-
+"""
 
 """
 ---- SECTION E ----
