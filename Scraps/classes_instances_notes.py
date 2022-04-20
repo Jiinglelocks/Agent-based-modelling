@@ -21,13 +21,13 @@ class Employee:
         #print('{} {}'.format(emp_1.first, emp_1.last)) # this is how the function would look 
 
 emp_1 = Employee('Alex', 'Camilleri', 50000)
-emp_2 = Employee('Test', 'User', 60000)
+#mp_2 = Employee('Test', 'User', 60000)
 
 #print(emp_1, emp_2)
 #print(emp_1.email)
 #print(emp_2.email)
 
-
+emp_1.first = 'John'
 
 print(emp_1.fullname()) # the instance (emp_1) is being passed in automatically, so have to expect it in the method and why we add self
 print(Employee.fullname(emp_1)) # can also run these methods using the class name itself (Employee) but have to manually pass in instance as an argument
