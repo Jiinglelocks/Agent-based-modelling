@@ -61,6 +61,13 @@ class Agent():
         self.store = 0
         self.name = name
         self.agents = agents
+        
+    # practising making a function inside the class        
+    #def randomise(self):
+        #self.y = random.randint(0,99)
+        #self.x = random.randint(0,99)
+    #def hi(self):
+        #print("hello world")
     
     def check_other_agent(self):
         """
@@ -76,7 +83,7 @@ class Agent():
     
     def __str__(self):
         """
-        str method, overriding the default __str__ by returning the name variable
+        str method, overriding the default __str__ by returning the name variable which has been passed into the __init__ constructor above
 
         Returns
         -------
@@ -162,6 +169,7 @@ class Agent():
     
     def distance_between(self, agent):
         return (((self._y - agent.y)**2) + ((self._x - agent.x)**2))**0.5
+    
     def share_with_neighbours(self, neighbourhood):
         #print(neighbourhood)
         for agent in self.agents:
@@ -173,12 +181,6 @@ class Agent():
                     #print(self, "and", agent, "are close enough to share resources, they share", resource_share, "units.")
                     self.store = resource_share
                     agent.store = resource_share
-            
-    #def randomise(self):
-        #self.y = random.randint(0,99)
-        #self.x = random.randint(0,99)
-    #def hi(self):
-        #print("hello world")
 
 class Predator(Agent): # creating a subclass of Agent to transfer
     def __init__ (self, environment, name, agents, predators): # self is a variable representing the object is injected into the call, traditionally called self (not a keyword)
@@ -196,7 +198,6 @@ class Predator(Agent): # creating a subclass of Agent to transfer
         self.agents = agents
         self.predators = predators
         """
-
     def hunt_agent(self, neighbourhood):
         for agent in self.agents[:]:
             distance = self.distance_between(agent)
