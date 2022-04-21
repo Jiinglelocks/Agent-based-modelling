@@ -284,7 +284,7 @@ class Predator(Agent): # creating a subclass of Agent to transfer attributes and
         for agent in self.agents[:]: # traversing every object in a copy of the list, because the original list may be changed by this function (removal of agents)
             distance = self.distance_between(agent) # injecting self/predator into distance between function with agent as argument
             if distance <= neighbourhood: # if the distance is within the neighbourhood
-                for i in range(int(agent.energy)): # predator will "drag down" its prey by draining energy, has no effect on agent movement speed
+                for i in range(int(agent.energy)): # predator will "drag down" its prey by draining energy
                     self._y = agent._y
                     self._x = agent._x
                     agent.movement = 0.1

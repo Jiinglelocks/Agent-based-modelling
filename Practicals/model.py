@@ -7,22 +7,21 @@ Created on Fri Apr 15 15:58:39 2022
 """
 ---- Agent-based Modelling ----
 
----- SECTION A ----
 ---- Model Setup ----
 """
 import random
 import operator
-import tkinter
+import tkinter # interface library
 from tkinter import * # imports everything from tkinter module to call tkinter functions without prefixing them
 from tkinter import ttk # newer themed widgets, importing just tkk itself means need to prefix anything inside that submodule.
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot
 import matplotlib.animation
-import agentframework
+import agentframework # my module to make the model work
 import csv
 import requests
-import bs4
+import bs4 # BeautifulSoup
 
 # set random seed for reproducible results
 #random.seed = 5
@@ -43,6 +42,7 @@ ax = fig.add_axes([0, 0, 1, 1])
 environment_file = 'in.txt' #'test.txt'
 environment = agentframework.create_env(environment_file)
 #print(environment[2]) # testing that the create_env function read the text file correctly
+
 
 # make a http request inside a response variable 'r'
 #r = requests.get('http://www.geog.leeds.ac.uk/courses/computing/practicals/python/agent-framework/part9/data.html')
@@ -67,7 +67,6 @@ for row in td_xs:
     x_values.append(int(row.text))
 #print(y_values) # checking how it looks
 #print(x_values)
-
 
 # create blank lists of agents and predators
 agents = []
@@ -150,6 +149,7 @@ def run():
 def quit_model():
     root.quit() # exit mainloop but preserve interpreter and widgets, can execute code to further interact with widgets
     root.destroy() # destroy all widgets and exit mainloop
+
 
 root = tkinter.Tk()
 root.wm_title("Model")
