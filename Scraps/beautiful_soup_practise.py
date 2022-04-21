@@ -28,8 +28,8 @@ for row in td_ys:
 x_values = []
 for row in td_xs:
     x_values.append(int(row.text))
-#print(y_values) # checking how it looks
-#print(x_values)
+print(y_values) # checking how it looks
+print(x_values)
 
     
 

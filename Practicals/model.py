@@ -76,15 +76,17 @@ agents = []
 predators = []
 
 for i in range(num_of_agents):
-    y = y_values[i]
-    x = x_values[i]
+    y = y_values[i] # these values are only between 0 and 99
+    x = x_values[i] # need to create and scrape own html page with values from 0 to 299
     name = ("Agent " + str(i)) # creating iterating agent name within name variable
     agents.append(agentframework.Agent(environment, name, agents, y, x)) # passing environment and name variables back into Agent class (making available to inner class functions)
-
+    random.shuffle(y_values)
+    random.shuffle(x_values)
+    
 # creating predators
 for i in range(num_of_predators):
-    #y = y_values[i]
-    #x = x_values[i]
+    y = random.randint(0,299) #y = y_values[i]
+    x = random.randint(0,299) #x = x_values[i]
     name = ("Predator" + str(i))
     predators.append(agentframework.Predator(environment, name, agents, y, x, predators))
 
