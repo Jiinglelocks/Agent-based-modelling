@@ -45,7 +45,8 @@ environment = agentframework.create_env(environment_file)
 #print(environment[2]) # testing that the create_env function read the text file correctly
 
 # make a http request inside a response variable 'r'
-r = requests.get('http://www.geog.leeds.ac.uk/courses/computing/practicals/python/agent-framework/part9/data.html')
+#r = requests.get('http://www.geog.leeds.ac.uk/courses/computing/practicals/python/agent-framework/part9/data.html')
+r = requests.get()
 content = r.text
 # make the soup! passing the text from the http request into a BeautifulSoup object
 # which represents it as a nested data structure
@@ -67,13 +68,10 @@ for row in td_xs:
 #print(y_values) # checking how it looks
 #print(x_values)
 
-"""
----- SECTION B ----
----- Agent Creation and Activity ----
-"""
 # create blank lists of agents and predators
 agents = []
 predators = []
+
 
 for i in range(num_of_agents):
     y = y_values[i] # these values are only between 0 and 99
@@ -107,10 +105,9 @@ for agent in agents:
     print(agent.agent_status())
 """
 
-# another part of animation code
+# function for agent activity which is passed into the animation function
 def update(frame_number):
     fig.clear()
-
 # agent activity
     for j in range(num_of_iterations):
         for i in range(num_of_agents):
@@ -125,10 +122,6 @@ def update(frame_number):
             predators[i].move()
             #predators[i].hunt_agent(neighbourhood)
 
-    """
-    ---- SECTION C ----
-    ---- Plotting and Visualisation ----
-    """
     # set graph limits
     matplotlib.pyplot.ylim(0, 300)
     matplotlib.pyplot.xlim(0, 300)
@@ -167,7 +160,6 @@ model_menu.add_command(label="Run model", command=run)
 model_menu.add_command(label="Quit", command=quit_model)
 
 
-
 """
 print("Agent updates:")
 for agent in agents:
@@ -176,10 +168,6 @@ for agent in agents:
 # testing the check_other_agent function to confirm the agents list is passing into the agent class correctly
 #agents[0].check_other_agent()
 
-"""
----- SECTION D ----
----- Agent Feedback and Metrics ----
-"""
 """
 # legacy distance_between function that works with the distance list populating code below
 def distance_between(agents_row_a, agents_row_b):
@@ -219,8 +207,7 @@ print("min distance was:", min_dist)
 """
 
 """
----- SECTION E ----
----- Output files ----
+---- Outputs ----
 """
 # write post-activity environment as a file at the end
 file2 = open('out.txt', 'w', newline='')

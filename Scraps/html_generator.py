@@ -18,8 +18,8 @@ f.write("<TABLE class=\'datatable\' id=\'yxz\'>\n")
 f.write("<TR><TH>y</TH><TH>x</TH><TH>z</TH></TR>\n")
 
 for i in range(100):
-	y = random.randint(0,299)
-	x = random.randint(0,299)
+	y = random.randint(0,299) # I altered
+	x = random.randint(0,299) # these bits (changed 99 to 299)
 	z = random.randint(0,255)
 	f.write("<TR><TD class=\'y\'>" + str(y) + "</TD>")
 	f.write("<TD class=\'x\'>" + str(x) + "</TD>")
