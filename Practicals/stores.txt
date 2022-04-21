@@ -124,3 +124,4 @@ Total eaten: 0
 Total eaten: 0
 Total eaten: 0
 Total eaten: 0
+Total eaten: 0

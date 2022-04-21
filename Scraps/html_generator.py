@@ -7,7 +7,7 @@ Created on Wed Apr 20 20:46:22 2022
 
 import random
 
-f = open("data.html", "w")
+f = open("data2.html", "w")
 
 f.write("<HTML>\n<BODY>\n")
 f.write("<STYLE>\n")
@@ -18,8 +18,8 @@ f.write("<TABLE class=\'datatable\' id=\'yxz\'>\n")
 f.write("<TR><TH>y</TH><TH>x</TH><TH>z</TH></TR>\n")
 
 for i in range(100):
-	y = random.randint(0,99)
-	x = random.randint(0,99)
+	y = random.randint(0,299)
+	x = random.randint(0,299)
 	z = random.randint(0,255)
 	f.write("<TR><TD class=\'y\'>" + str(y) + "</TD>")
 	f.write("<TD class=\'x\'>" + str(x) + "</TD>")
