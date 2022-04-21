@@ -29,9 +29,9 @@ import bs4
 
 # define model parameters
 num_of_agents = 10
-num_of_iterations = 10 #100
+num_of_iterations = 100 #100
 neighbourhood = 20
-num_of_predators = 4
+num_of_predators = 2
 
 # first part of code for animation
 # setting the figure
@@ -46,13 +46,13 @@ environment = agentframework.create_env(environment_file)
 
 # make a http request inside a response variable 'r'
 #r = requests.get('http://www.geog.leeds.ac.uk/courses/computing/practicals/python/agent-framework/part9/data.html')
-r = requests.get()
+r = requests.get('https://jiinglelocks.github.io/Agent-based-modelling/Model/data2.html') # pulling the initial yx values from a generated html table hosted on my github
 content = r.text
 # make the soup! passing the text from the http request into a BeautifulSoup object
 # which represents it as a nested data structure
 soup = bs4.BeautifulSoup(content, 'html.parser')
 #print(soup.prettify()) # checking out the html in an indented format
-td_ys = soup.find_all(attrs={"class" : "y"}) # finds all rows with specified class, stores in a list including tags
+td_ys = soup.find_all(attrs={"class" : "y"}) # finds all rows with specified class, energys in a list including tags
 td_xs = soup.find_all(attrs={"class" : "x"})
 #print(int(td_ys[0].text)) # printing out a value at position [0] to see how it looks
 
@@ -68,26 +68,28 @@ for row in td_xs:
 #print(y_values) # checking how it looks
 #print(x_values)
 
+
 # create blank lists of agents and predators
 agents = []
 predators = []
 
-
 for i in range(num_of_agents):
-    y = y_values[i] # these values are only between 0 and 99
-    x = x_values[i] # need to create and scrape own html page with values from 0 to 299
-    name = ("Agent " + str(i)) # creating iterating agent name within name variable
-    agents.append(agentframework.Agent(environment, name, agents, y, x)) # passing environment and name variables back into Agent class (making available to inner class functions)
+    y = y_values[i] # used provided html generator code to increase the integers generated to max value 299
+    x = x_values[i]
+    name = ("Agent " + str(i)) # creating iterating agent name and number within name variable
+    agents.append(agentframework.Agent(environment, name, agents, y, x)) # arguments are passing these variables back into Agent class (making available to inner class functions)
     random.shuffle(y_values)
     random.shuffle(x_values)
     
 # creating predators
 for i in range(num_of_predators):
-    y = random.randint(0,299) #y = y_values[i]
-    x = random.randint(0,299) #x = x_values[i]
+    y = y_values[i] 
+    x = x_values[i]
     name = ("Predator" + str(i))
     predators.append(agentframework.Predator(environment, name, agents, y, x, predators))
-
+    random.shuffle(y_values)
+    random.shuffle(x_values)
+    
 if num_of_predators < 0:
     ("Error: cannot have negative predators")
 elif num_of_predators == 1:
@@ -99,7 +101,7 @@ else:
 
 """
 # printing out agent names to test __str__ override, see how name looks
-# prints initial location and store info for each agent  
+# prints initial location and energy info for each agent  
 print("Initial agent info:")
 for agent in agents:
     print(agent.agent_status())
@@ -110,17 +112,20 @@ def update(frame_number):
     fig.clear()
 # agent activity
     for j in range(num_of_iterations):
-        for i in range(num_of_agents):
+        for i in range(len(agents[:])):
             agents[i].move()
             agents[i].eat()
             agents[i].share_with_neighbours(neighbourhood)
+            #agents[i].breed_check(neighbourhood, environment, agents)
+            agents[i].breed_test(neighbourhood, environment, agents)
+            #agents[i].starve()
             random.shuffle(agents) # shuffle the list of agents to prevent artifacts
 
 # predator activity   
     for j in range(num_of_iterations):
         for i in range(num_of_predators):
             predators[i].move()
-            #predators[i].hunt_agent(neighbourhood)
+            predators[i].hunt_agent(neighbourhood)
 
     # set graph limits
     matplotlib.pyplot.ylim(0, 300)
@@ -128,7 +133,7 @@ def update(frame_number):
     matplotlib.pyplot.imshow(environment)
     
     # loop to plot all the agents
-    for i in range(num_of_agents):
+    for i in range(len(agents)):
         matplotlib.pyplot.scatter(agents[i].x, agents[i].y, color='yellow')
         
     for i in range(num_of_predators):
@@ -216,16 +221,16 @@ for row in environment:
     writer.writerow(row)
 file2.close()
 
-# append a list with each agent's store value and sum them
-stores_list = []
+# append a list with each agent's energy value and sum them
+energy_list = []
 for agent in agents: 
-    stores_list.append(agent.store)
-stores_total = str(sum(stores_list))
+    energy_list.append(agent.energy)
+energy_total = str(sum(energy_list))
 
-# append a file with the total of agent's stores each time model is run
-file3 = open('stores.txt', 'a', newline='')
+# append a file with the total of agent's energys each time model is run
+file3 = open('energy.txt', 'a', newline='')
 appender = csv.writer(file3, delimiter=',')
-file3.write("Total eaten: " + stores_total + "\n")
+file3.write("Total eaten: " + energy_total + "\n")
 file3.close()
 
 tkinter.mainloop()

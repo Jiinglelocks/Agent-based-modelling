@@ -10,7 +10,7 @@ import bs4
 
 # make a http request inside a response variable 'r'
 #r = requests.get('http://www.geog.leeds.ac.uk/courses/computing/practicals/python/agent-framework/part9/data.html')
-r = requests.get('https://github.com/Jiinglelocks/Agent-based-modelling/blob/main/Model/data2.html')
+r = requests.get('https://jiinglelocks.github.io/Agent-based-modelling/Model/data2.html')
 content = r.text
 # make the soup! passing the text from the http request into a BeautifulSoup object
 # which represents it as a nested data structure

@@ -65,10 +65,11 @@ class Agent():
             self._y = random.randint(0,299)
         else:
             self._x = x #random.randint(0,299)
-        self.environment = environment
-        self.store = 0
+        self.environment = environment # the environment file read in through the create_env function
+        self.energy = random.randint(250,2000) # starting off with random energy level
         self.name = name
-        self.agents = agents
+        self.agents = agents # this is the list of agents
+        self.movement = 1 # the movement speed
         
     # practising making a function inside the class        
     #def randomise(self):
@@ -103,7 +104,7 @@ class Agent():
         
     def agent_status(self):
         """
-        Returns the name, coordinates and store value of an agent
+        Returns the name, coordinates and energy value of an agent
 
         Returns
         -------
@@ -111,29 +112,38 @@ class Agent():
             name
             x
             y
-            store
+            energy
 
         """
-        return str(self.name) + ", x=" + str(self._x) + ", y=" + str(self._y) + ", store=" + str(self.store)
+        return str(self.name) + ", x=" + str(self._x) + ", y=" + str(self._y) + ", energy=" + str(self.energy)
 
 # protecting the y and x variables behind get/set methods
     def get_y(self):
         """
-        user-defined methods such as the agent's actions etc follow.
-        the below function moves the agent randomly when called
-        could use .y here also to call get/set methods defined above
-        but since this is inside the agentframework module it's clearer
-        to use the private variable _y     
+        Get_y method. Returns the current value of self._y variable
 
         Returns
         -------
-        TYPE
-            DESCRIPTION.
+        Int
+            the y value retrieved
 
         """
         return self._y
         
     def set_y(self, value):
+        """
+        Sets the self._y value
+
+        Parameters
+        ----------
+        value : Int
+            The y value to be set
+
+        Returns
+        -------
+        None.
+
+        """
         self._y = value
         
     def del_y(self):
@@ -154,64 +164,135 @@ class Agent():
     x = property(get_x, set_x, del_x, "x property")
 
     def move(self):
-        if random.random() < 0.5:
-            self._y = (self._y + 1) % 300
-        else:
-            self._y = (self._y - 1) % 300
-        if random.random() < 0.5:
-            self._x = (self._x + 1) % 300        
-        else:
-            self._x = (self._x - 1) % 300 
+        #if self.energy > 0:
+            if random.random() < 0.5:
+                self._y = (self._y + self.movement) % 300
+                #self.energy -= 1 # energy cost associated with movement (removed feature, could implement if more time but results were too chaotic)
+            else:
+                self._y = (self._y - self.movement) % 300
+                #self.energy -= 1
+            if random.random() < 0.5:
+                self._x = (self._x + self.movement) % 300   
+                #self.energy -= 1
+            else:
+                self._x = (self._x - self.movement) % 300
+                #self.energy -= 1
+        #else:
+            #pass
             
     def eat(self):
         #pass
         if self.environment[self._y][self._x] > 10: # if the environment value is greater than 10
             self.environment[self._y][self._x] -= 10 # 10 is removed from the value
-            self.store += 10 # 10 is added to the agent's store (Agent eats 10 units of environment)
+            self.energy += 10 # 10 is added to the agent's energy (Agent eats 10 units of environment)
         elif self.environment[self._y][self._x] > 0 < 10: # if the value is greater than 0 but less than 10
-            self.store += self.environment[self._y][self._x] # store that value first, before it is changed by the next line (agent eats the value)
+            self.energy += self.environment[self._y][self._x] # energy that value first, before it is changed by the next line (agent eats the value)
             self.environment[self._y][self._x] -= self.environment[self._y][self._x] # reducing the value to 0 by subtracting it from itself (agent has eaten the remainder)
-        if self.store > 200: # if agent's store exceeds 200
-            self.environment[self._y][self._x] += self.store # the environment receives the store value at current location
-            self.store -= self.store # the agent's store loses the value (Agent was sick!)
+        if self.energy > 500: # if agent's energy exceeds 500
+            self.environment[self._y][self._x] += self.energy # the environment receives the energy value at current location
+            self.energy -= (self.energy + 25) # the agent's energy loses the value (Agent was sick!)
     
     def distance_between(self, agent):
         return (((self._y - agent.y)**2) + ((self._x - agent.x)**2))**0.5
     
     def share_with_neighbours(self, neighbourhood):
         #print(neighbourhood)
+        randint = random.random()
         for agent in self.agents:
             if agent != self:
                 distance = self.distance_between(agent)
-                if distance <= neighbourhood:
-                    sum = self.store + agent.store
+                if distance <= neighbourhood and randint > 0.5:
+                    sum = self.energy + agent.energy
                     resource_share = sum / 2
                     #print(self, "and", agent, "are close enough to share resources, they share", resource_share, "units.")
-                    self.store = resource_share
-                    agent.store = resource_share
+                    self.energy = resource_share
+                    agent.energy = resource_share
+                    
+    def breed_test(self, neighbourhood, environment, agents):
+        """
+        This was a function to test the breeding concept in the model. Quite unrealistic.
 
-class Predator(Agent): # creating a subclass of Agent to transfer
-    def __init__ (self, environment, name, agents, y, x, predators): # self is a variable representing the object is injected into the call, traditionally called self (not a keyword)
+        Parameters
+        ----------
+        neighbourhood : int
+            the neighbourhood parameter given at model initialisation
+        environment : list
+            the environment file read in at initialisation containing 300x300 grid of numeric values
+        agents : list
+            list of agents that have been created
+
+        Returns
+        -------
+        None.
+
+        """
+        randint = random.randint(0,1000)
+        if randint == 489 and self.environment[self._y][self._x] > 255: # the last condition is to reduce the frequency of reproduction, can be thought of as habitat quality (or a pile of puke)
+            #print(randint) # testing how often the randint comes up, surprisingly often
+            name = ("Agent " + str(len(agents)))
+            print(name, "has been born")
+            y = self._y
+            x = self._x
+            agents.append(Agent(environment, name, agents, y, x))
+            
+    """
+    # this doesn't work well, creates agents too often but is part of me testing a more "realistic" interaction
+    def breed_check(self, neighbourhood, environment, agents):
+        for agent in self.agents:
+            if agent != self:
+                distance = self.distance_between(agent)
+                breeding_ground = self.environment[self._y][self._x]
+                if distance <= neighbourhood and self.energy > 150 and agent.energy > 150 and breeding_ground > 200:
+                    print(distance, self.energy, agent.energy)
+                    self.energy -= 25
+                    agent.energy -= 25
+                    name = ("Agent " + str(len(agents)))
+                    y = self._y
+                    x = self._x
+                    #print("name")
+                    #agents.append(Agent(environment, name, agents, y, x))
+    """
+    
+    """
+    # failed concept, kept to implement later
+    def starve(self):
+            if self.energy == 0:
+                print(self, "has starved and died")
+                self.agents.remove(self)
+            else:
+                pass
+    """
+
+# taking advantage of inheritence
+class Predator(Agent): # creating a subclass of Agent to transfer attributes and methods
+    def __init__ (self, environment, name, agents, y, x, predators): # self is a variable representing the object injected into the call, traditionally called self (not a keyword)
         #pass
         self.predators = predators
-        super().__init__(environment, name, agents, y, x)
-        
+        super().__init__(environment, name, agents, y, x) # this pulls attributes and methods from the superclass (Agent)
+        self.movement = 1.5 # re-defining a superclass attribute, predators should move faster
         """
         # no need for these, since they have been inherited from the Agent class
         self._y = random.randint(0,299) #None
         self._x = random.randint(0,299) #None
         self.environment = environment
-        self.store = 0
+        self.energy = 0
         self.name = name
         self.agents = agents
         self.predators = predators
         """
     def hunt_agent(self, neighbourhood):
-        for agent in self.agents[:]:
-            distance = self.distance_between(agent)
-            if distance <= neighbourhood:
-                #print("Growl")
-                self.agents.remove(agent)
+        for agent in self.agents[:]: # traversing every object in a copy of the list, because the original list may be changed by this function (removal of agents)
+            distance = self.distance_between(agent) # injecting self/predator into distance between function with agent as argument
+            if distance <= neighbourhood: # if the distance is within the neighbourhood
+                for i in range(int(agent.energy)): # predator will "drag down" its prey by draining energy, has no effect on agent movement speed
+                    self._y = agent._y
+                    self._x = agent._x
+                    agent.movement = 0.1
+                    agent.energy -= 1
+                    self.energy += 1
+                #print("Growl") # this was to test if the predators were created successfully and receiving arguments/parameters correctly
                 print(agent, "has been eaten")
+                self.agents.remove(agent)
+                
                 
         
