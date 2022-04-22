@@ -6,6 +6,13 @@
 ---- Agent-based Modelling ----
 ---- GEOG5003M Programming for Geographical Information Analysis ----
 ---- Agent Framework Module
+---- Version 0.8
+----
+---- This file provides the framework for the agent based model "model.py" to run
+---- It contains an environment creation function, an Agent super-class with methods
+---- enabling it to have a position in 2d space, move, eat, check distance between self and other agents
+---- and breed. It also contains a Predator sub-class, inheriting the Agent methods (using only some of them)
+---- with its own specific method to hunt agents.
 """
 
 """
@@ -43,6 +50,21 @@ environment = csv_func_test(input_file)
 print(environment)
 """
 def create_env(environment_file):
+    """
+    Creates the environment in a list of lists from a 300x300 grid of comma separated values in .txt format
+
+    Parameters
+    ----------
+    environment_file : .txt
+        Must be a 300x300 grid of comma separated values in .txt file format located 
+        in the same directory as the model.py and agentframework.py
+
+    Returns
+    -------
+    environment : list
+        Appends the environment text file to a list of lists
+
+    """
     #pass
     file1 = open(environment_file, newline="")
     dataset = csv.reader(file1, delimiter=',', quoting=csv.QUOTE_NONNUMERIC)

@@ -6,6 +6,10 @@
 ---- Agent-based Modelling
 ---- GEOG5003M Programming for Geographical Information Analysis
 ---- Model
+---- Version 0.8
+---- This file contains all the code to run the agents model, is reliant on "agentframework.py" to be in the same directory
+---- Opens a tkinter frame with a matplotlib animation of agents and predators (numbers dependent on the parameters set)
+---- runs the model for set number of iterations
 """
 
 """
